@@ -1,0 +1,20 @@
+{
+  "name": "todo-app-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nitro dev",
+    "build": "nitro build",
+    "preview": "node .output/server/index.mjs"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "h3": "^1.15.0",
+    "nitropack": "^2.11.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/better-sqlite3": "^7.6.12"
+  }
+}
