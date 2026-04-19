@@ -1,30 +1,24 @@
 import { unlinkSync, existsSync } from "node:fs";
 
+const testDbPath = process.env.TEST_DB_PATH || "data/todo.db";
+
 // Clear stale DB before importing the built server
-const dbPath = "data/todo.db";
-if (existsSync(dbPath)) {
-  unlinkSync(dbPath);
-}
-if (existsSync(dbPath + "-wal")) {
-  unlinkSync(dbPath + "-wal");
-}
-if (existsSync(dbPath + "-shm")) {
-  unlinkSync(dbPath + "-shm");
+try {
+  if (existsSync(testDbPath)) unlinkSync(testDbPath);
+  if (existsSync(testDbPath + "-wal")) unlinkSync(testDbPath + "-wal");
+  if (existsSync(testDbPath + "-shm")) unlinkSync(testDbPath + "-shm");
+} catch {
+  // DB may not exist
 }
 
 // Set port before importing the built server
 process.env.PORT = "3001";
 
-let imported = false;
+// Importing the built server auto-starts it
+// @ts-expect-error .mjs has no types
+import("../../.output/server/index.mjs");
 
 export async function startServer(): Promise<void> {
-  if (imported) return;
-  imported = true;
-
-  // Importing the built server auto-starts it
-  // @ts-expect-error .mjs has no types
-  await import("../../.output/server/index.mjs");
-
   // Wait for server to be ready
   for (let i = 0; i < 40; i++) {
     try {
@@ -35,16 +29,19 @@ export async function startServer(): Promise<void> {
     }
     await new Promise((r) => setTimeout(r, 100));
   }
-
   throw new Error("Server failed to start within 4 seconds");
 }
 
 export async function stopServer(): Promise<void> {
-  // The Nitro server handles its own lifecycle via graceful shutdown
+  // No-op: Nitro server lifecycle not manageable in Vitest module caching env
 }
 
-export async function api(path: string, options?: RequestInit): Promise<Response> {
-  return fetch(`http://localhost:3001${path}`, {
+export async function api(
+  path: string,
+  options?: RequestInit,
+  baseUrl = "http://localhost:3001"
+): Promise<Response> {
+  return fetch(`${baseUrl}${path}`, {
     headers: { "Content-Type": "application/json", ...(options?.headers ?? {}) },
     ...options,
   });
