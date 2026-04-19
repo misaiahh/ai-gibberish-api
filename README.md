@@ -53,6 +53,21 @@ npm run test:watch  # watch mode
 
 Tests build the server first, then run integration tests against the built output + unit tests for the DB layer.
 
+### Contract Tests (Pact)
+
+Consumer-driven contract tests validate that the API response shapes match frontend expectations.
+
+```bash
+npm run test:contracts   # run all 15 contract tests
+```
+
+Tests run in three phases:
+1. **Consumer interactions** (9 tests) — generates a pact file via mock server
+2. **Provider verification** (1 test) — validates the real Nitro server against the pact file (stateless interactions only)
+3. **Integration tests** (5 tests) — covers state-dependent endpoints (GET by id, PATCH, DELETE)
+
+See [docs/contract-testing.md](docs/contract-testing.md) for setup details and troubleshooting.
+
 ### Docker
 
 ```bash

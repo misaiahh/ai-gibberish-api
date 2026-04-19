@@ -8,10 +8,13 @@
     "build": "nitro build",
     "preview": "node .output/server/index.mjs",
     "test": "npm run build --if-present && vitest run",
-    "test:watch": "npm run build --if-present && vitest"
+    "test:watch": "npm run build --if-present && vitest",
+    "test:contracts": "test -d .output/server && vitest run --config vitest.contracts.config.ts || (echo 'Build first: npm run build' && exit 1)"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^8.5.0",
+    "@pact-foundation/pact": "^16.3.0",
+    "@pact-foundation/pact-core": "^18.1.0",
     "better-sqlite3": "^11.7.0",
     "h3": "^1.15.0",
     "nitropack": "^2.11.0",
