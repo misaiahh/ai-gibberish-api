@@ -2,6 +2,10 @@
 
 Lightweight REST API for the Todo App, built with H3 + Nitro and SQLite.
 
+## Summary of Changes
+
+- Pinned apt packages in Dockerfile to specific versions for reproducible builds
+
 ## Tech Stack
 
 - **Framework**: H3 + Nitro (filesystem routing)
