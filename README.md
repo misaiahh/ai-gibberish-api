@@ -56,10 +56,20 @@ Tests build the server first, then run integration tests against the built outpu
 ### Docker
 
 ```bash
+# Start
 docker compose up --build
+
+# Stop
+docker compose down
+
+# View logs
+docker compose logs -f
+
+# Rebuild and restart
+docker compose up --build -d
 ```
 
-Server runs on `http://localhost:3001`. The SQLite database file is persisted in `./data/`.
+The SQLite database is persisted in `./data/`.
 
 ## API
 

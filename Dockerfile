@@ -1,21 +1,15 @@
-FROM node:22-alpine AS build
+FROM node:22-bookworm
+
+RUN apt-get update && apt-get install -y --no-install-recommends python3 g++ make
+RUN rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 COPY . .
 RUN npm run build
-
-FROM node:22-alpine
-
-WORKDIR /app
-
-COPY --from=build /app/package*.json ./
-RUN npm ci --production
-
-COPY --from=build /app/.output ./
 
 EXPOSE 3001
 
