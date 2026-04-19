@@ -39,10 +39,19 @@ interface Todo {
 
 ```bash
 npm install
-npm run dev
+PORT=3001 npm run dev
 ```
 
 Server runs on `http://localhost:3001`.
+
+### Tests
+
+```bash
+npm test        # run all tests
+npm run test:watch  # watch mode
+```
+
+Tests build the server first, then run integration tests against the built output + unit tests for the DB layer.
 
 ### Docker
 

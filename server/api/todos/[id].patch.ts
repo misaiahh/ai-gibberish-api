@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
 
   const todo = db
     .prepare("SELECT * FROM todos WHERE id = ?")
-    .get(id) as { id: string } | undefined;
+    .get(id) as { id: string; title: string; completed: number; created_at: string } | undefined;
 
   if (!todo) {
     throw createError({ statusCode: 404, statusMessage: "Todo not found" });
