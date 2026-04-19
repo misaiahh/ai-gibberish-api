@@ -11,9 +11,11 @@
     "test:watch": "npm run build --if-present && vitest"
   },
   "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^8.5.0",
     "better-sqlite3": "^11.7.0",
     "h3": "^1.15.0",
-    "nitropack": "^2.11.0"
+    "nitropack": "^2.11.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",

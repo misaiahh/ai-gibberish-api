@@ -1,19 +1,9 @@
 services:
-  api-dev:
-    build:
-      dockerfile: Dockerfile.dev
+  api:
+    build: .
     ports:
       - "3000:3001"
     volumes:
       - ./data:/app/data
     environment:
       - PORT=3001
-    develop:
-      watch:
-        - path: ./server
-          target: /app/server
-          action: sync
-          initial_sync: true
-        - path: ./package.json
-          target: /app/package.json
-          action: sync+restart

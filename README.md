@@ -55,31 +55,28 @@ Tests build the server first, then run integration tests against the built outpu
 
 ### Docker
 
-#### Development (file watching)
-
 ```bash
-# Start with file watching — changes to server/ sync and hot-reload
-docker compose up --watch
-```
-
-Server runs on `http://localhost:3000`.
-
-#### Production
-
-```bash
-# Build and start production container
-docker compose -f docker-compose.prod.yml up --build -d
+# Build and start
+docker compose up --build -d
 
 # Stop
-docker compose -f docker-compose.prod.yml down
+docker compose down
 
 # View logs
-docker compose -f docker-compose.prod.yml logs -f
+docker compose logs -f
 ```
 
-Server runs on `http://localhost:3000`.
+Server runs on `http://localhost:3000`. Note: `nitro dev` inside Docker doesn't reliably pick up file changes. Use `npm run dev` locally for development with hot-reload.
 
 The SQLite database is persisted in `./data/`.
+
+## API Reference
+
+See [docs/api.md](docs/api.md) for full endpoint documentation.
+
+An interactive API reference (Scalar UI) is available at `/api-docs`. The raw OpenAPI spec is at `/openapi.json`.
+
+Example: `http://localhost:3001/api-docs`
 
 ## API
 

@@ -12,37 +12,34 @@ npm run dev
 
 Server runs on `http://localhost:3001`.
 
-### Docker (file watching)
-
-```bash
-docker compose up --watch
-```
-
-Server runs on `http://localhost:3000`.
-
-File changes in `server/` sync into the container and Nitro hot-reloads automatically. Changes to `package.json` restart the container.
-
-## Production
-
 ### Docker
 
 ```bash
-docker compose -f docker-compose.prod.yml build
-docker compose -f docker-compose.prod.yml up -d
+docker compose up --build -d
 ```
 
 Server runs on `http://localhost:3000`.
 
-### Docker (override host port)
+> **Note**: `nitro dev` inside Docker doesn't reliably pick up file changes. Use `npm run dev` locally for development with hot-reload.
 
-Edit `docker-compose.prod.yml` to change the host port mapping:
+### Override host port
+
+Edit `docker-compose.yml` to change the host port mapping:
 
 ```yaml
 ports:
   - "8080:3001"
 ```
 
-### Build artifact
+## API Reference
+
+See [docs/api.md](../docs/api.md) for full endpoint documentation.
+
+The OpenAPI spec is available at `/openapi.json`. A Scalar-powered API reference UI is served at `/api-docs`.
+
+Example: `http://localhost:3001/api-docs`
+
+## Build artifact
 
 ```bash
 npm run build
