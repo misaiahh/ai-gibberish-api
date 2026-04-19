@@ -4,7 +4,6 @@ const html = `<!DOCTYPE html>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Todo App API — Documentation</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@scalar/api-reference@2.0.0/dist/external/scalar-api-reference-default.css" />
 </head>
 <body>
   <script
@@ -12,7 +11,7 @@ const html = `<!DOCTYPE html>
     type="application/json"
     data-url="/openapi.json"
   ></script>
-  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@2.0.0/dist/external/bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
 </body>
 </html>`;
 
