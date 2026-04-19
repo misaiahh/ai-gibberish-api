@@ -4,3 +4,6 @@ data/
 .nitro/
 *.log
 .env
+.claude/
+plans/
+
