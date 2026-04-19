@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nitro dev",
     "build": "nitro build",
-    "preview": "node .output/server/index.mjs"
+    "preview": "node .output/server/index.mjs",
+    "test": "npm run build --if-present && vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "better-sqlite3": "^11.7.0",
@@ -14,7 +16,9 @@
     "nitropack": "^2.11.0"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@vitest/coverage-v8": "^4.1.4",
     "typescript": "^5.7.0",
-    "@types/better-sqlite3": "^7.6.12"
+    "vitest": "^4.1.4"
   }
 }
