@@ -55,19 +55,29 @@ Tests build the server first, then run integration tests against the built outpu
 
 ### Docker
 
+#### Development (file watching)
+
 ```bash
-# Start
-docker compose up --build
+# Start with file watching — changes to server/ sync and hot-reload
+docker compose up --watch
+```
+
+Server runs on `http://localhost:3000`.
+
+#### Production
+
+```bash
+# Build and start production container
+docker compose -f docker-compose.prod.yml up --build -d
 
 # Stop
-docker compose down
+docker compose -f docker-compose.prod.yml down
 
 # View logs
-docker compose logs -f
-
-# Rebuild and restart
-docker compose up --build -d
+docker compose -f docker-compose.prod.yml logs -f
 ```
+
+Server runs on `http://localhost:3000`.
 
 The SQLite database is persisted in `./data/`.
 
