@@ -43,6 +43,35 @@ const IdParam = z.object({
   }),
 });
 
+// Preferences schemas
+export const PreferencesSchema = z
+  .object({
+    clientStorageEnabled: z.boolean().openapi({
+      description: "Enable/disable client-side storage",
+      example: true,
+    }),
+    serverStorageEnabled: z.boolean().openapi({
+      description: "Enable/disable server-side storage",
+      example: true,
+    }),
+    createdAt: z.string().openapi({ example: "2025-01-01T00:00:00.000Z" }),
+    updatedAt: z.string().openapi({ example: "2025-01-01T00:00:00.000Z" }),
+  })
+  .openapi("Preferences");
+
+export const UpdatePreferencesInputSchema = z
+  .object({
+    clientStorageEnabled: z.boolean().optional().openapi({
+      description: "Enable/disable client-side storage",
+      example: false,
+    }),
+    serverStorageEnabled: z.boolean().optional().openapi({
+      description: "Enable/disable server-side storage",
+      example: false,
+    }),
+  })
+  .openapi("UpdatePreferencesInput");
+
 export default defineNitroPlugin(() => {
   registry.registerPath({
     method: "get",
@@ -183,6 +212,57 @@ export default defineNitroPlugin(() => {
       },
       404: {
         description: "Todo not found",
+        content: {
+          "application/json": {
+            schema: z.object({ error: z.string() }).openapi("ErrorResponse"),
+          },
+        },
+      },
+    },
+  });
+
+  registry.registerPath({
+    method: "get",
+    path: "/api/preferences",
+    summary: "Get user preferences",
+    request: {},
+    responses: {
+      200: {
+        description: "User preferences",
+        content: {
+          "application/json": {
+            schema: PreferencesSchema,
+          },
+        },
+      },
+    },
+  });
+
+  registry.registerPath({
+    method: "patch",
+    path: "/api/preferences",
+    summary: "Update user preferences",
+    request: {
+      body: {
+        description: "Preferences to update (at least one required)",
+        content: {
+          "application/json": {
+            schema: UpdatePreferencesInputSchema,
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: "Updated preferences",
+        content: {
+          "application/json": {
+            schema: PreferencesSchema,
+          },
+        },
+      },
+      400: {
+        description: "Validation error",
         content: {
           "application/json": {
             schema: z.object({ error: z.string() }).openapi("ErrorResponse"),
