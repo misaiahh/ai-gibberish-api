@@ -4,6 +4,7 @@ Lightweight REST API for the Todo App, built with H3 + Nitro and SQLite.
 
 ## Summary of Changes
 
+- Added `/api/preferences` endpoint for storing user preferences (client-side and server-side storage toggles)
 - Pinned apt packages in Dockerfile to specific versions for reproducible builds
 - Added ESLint with TypeScript recommended rules for code quality
 
@@ -37,6 +38,26 @@ interface Todo {
   updatedAt: string; // ISO date string
 }
 ```
+
+### Preferences
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET    | `/api/preferences` | Get current user's preferences (creates defaults if none exist) |
+| PATCH  | `/api/preferences` | Update current user's preferences |
+
+### Preferences schema
+
+```ts
+interface Preferences {
+  clientStorageEnabled: boolean; // Enable/disable client-side storage
+  serverStorageEnabled: boolean; // Enable/disable server-side storage
+  createdAt: string;             // ISO date string
+  updatedAt: string;             // ISO date string
+}
+```
+
+Users can keep all data locally with no backup by setting both preferences to `false`.
 
 ## Getting Started
 

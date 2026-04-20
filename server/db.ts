@@ -53,4 +53,14 @@ try {
   // Column already exists
 }
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS preferences (
+    user_id TEXT PRIMARY KEY,
+    client_storage_enabled INTEGER NOT NULL DEFAULT 1,
+    server_storage_enabled INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )
+`);
+
 export { db };
