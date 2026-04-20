@@ -1,17 +1,16 @@
 import { db } from "../../db";
-import { defineEventHandler, getRouterParam, readBody, createError } from "h3";
+import { defineEventHandler, getRouterParam, createError } from "h3";
 import { useSession } from "../../lib/sessionHandler";
 
 // PATCH /api/todos/:id — update a todo
 export default defineEventHandler(async (event) => {
-  useSession(event);
-  const session = (event.context as { session: { sessionId: string } }).session;
+  const { userId } = useSession(event);
 
   const id = getRouterParam(event, "id");
 
   const todo = db
-    .prepare("SELECT * FROM todos WHERE id = ? AND session_id = ?")
-    .get(id, session.sessionId) as { id: string; title: string; completed: number; created_at: string } | undefined;
+    .prepare("SELECT * FROM todos WHERE id = ? AND user_id = ?")
+    .get(id, userId) as { id: string; title: string; completed: number; created_at: string } | undefined;
 
   if (!todo) {
     throw createError({ statusCode: 404, statusMessage: "Todo not found" });
@@ -56,9 +55,9 @@ export default defineEventHandler(async (event) => {
   fields.push("updated_at = ?");
   values.push(now);
   values.push(id);
-  values.push(session.sessionId);
+  values.push(userId);
 
-  db.prepare(`UPDATE todos SET ${fields.join(", ")} WHERE id = ? AND session_id = ?`).run(...values);
+  db.prepare(`UPDATE todos SET ${fields.join(", ")} WHERE id = ? AND user_id = ?`).run(...values);
 
   return {
     id: todo.id,

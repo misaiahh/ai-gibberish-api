@@ -32,8 +32,23 @@ db.exec(`
   )
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    cookie_id TEXT UNIQUE NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )
+`);
+
 try {
-  db.exec(`ALTER TABLE todos ADD COLUMN session_id TEXT REFERENCES sessions(id)`);
+  db.exec(`ALTER TABLE todos DROP COLUMN session_id`);
+} catch {
+  // Column doesn't exist
+}
+
+try {
+  db.exec(`ALTER TABLE todos ADD COLUMN user_id TEXT`);
 } catch {
   // Column already exists
 }

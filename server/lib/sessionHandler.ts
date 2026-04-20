@@ -1,44 +1,44 @@
 import type { H3Event } from "h3";
 import { getCookie, setCookie, deleteCookie } from "h3";
-import { getSessionById, upsertSession, createSessionRow, insertSession, deleteSession } from "./session";
+import { getUserByCookieId, upsertUser, createUserRow, insertUser, deleteUserByCookieId } from "./session";
 
 const SESSION_NAME = "todo-session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
 
-export function useSession(event: H3Event): { sessionId: string } {
-  let sessionId = getCookie(event, SESSION_NAME);
+export function useSession(event: H3Event): { userId: string } {
+  const cookieId = getCookie(event, SESSION_NAME);
 
-  if (sessionId && !getSessionById(sessionId)) {
-    sessionId = crypto.randomUUID();
-    const row = createSessionRow(sessionId);
-    insertSession(row);
-    upsertSession(sessionId, { userId: sessionId });
+  if (!cookieId || !getUserByCookieId(cookieId)) {
+    const userId = crypto.randomUUID();
+    const row = createUserRow(userId, cookieId ?? userId);
+    insertUser(row);
+    upsertUser(userId, userId);
+    setCookie(event, SESSION_NAME, userId, {
+      maxAge: SESSION_MAX_AGE,
+      httpOnly: true,
+      sameSite: "lax",
+    });
+    (event.context as { user: { userId: string } }).user = { userId };
+    return { userId };
   }
 
-  if (!sessionId) {
-    sessionId = crypto.randomUUID();
-    const row = createSessionRow(sessionId);
-    insertSession(row);
-    upsertSession(sessionId, { userId: sessionId });
-  }
+  upsertUser(cookieId, cookieId);
 
-  upsertSession(sessionId, { userId: sessionId });
-
-  setCookie(event, SESSION_NAME, sessionId, {
+  setCookie(event, SESSION_NAME, cookieId, {
     maxAge: SESSION_MAX_AGE,
     httpOnly: true,
     sameSite: "lax",
   });
 
-  (event.context as { session: { sessionId: string } }).session = { sessionId };
+  (event.context as { user: { userId: string } }).user = { userId: cookieId };
 
-  return { sessionId };
+  return { userId: cookieId };
 }
 
 export function clearCurrentSession(event: H3Event): void {
-  const session = (event.context as { session?: { sessionId: string } }).session;
-  if (session) {
-    deleteSession(session.sessionId);
+  const user = (event.context as { user?: { userId: string } }).user;
+  if (user) {
+    deleteUserByCookieId(user.userId);
   }
   deleteCookie(event, SESSION_NAME);
 }

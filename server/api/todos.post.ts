@@ -4,8 +4,7 @@ import { useSession } from "../lib/sessionHandler";
 
 // POST /api/todos — create a new todo
 export default defineEventHandler(async (event) => {
-  useSession(event);
-  const session = (event.context as { session: { sessionId: string } }).session;
+  const { userId } = useSession(event);
 
   // Read body directly from raw request to avoid h3 readBody issues in test env
   const body = await new Promise<Record<string, unknown>>((resolve, reject) => {
@@ -31,8 +30,8 @@ export default defineEventHandler(async (event) => {
   const now = new Date().toISOString();
 
   db.prepare(
-    "INSERT INTO todos (id, title, completed, created_at, updated_at, session_id) VALUES (?, ?, ?, ?, ?, ?)"
-  ).run(id, title.trim(), 0, now, now, session.sessionId);
+    "INSERT INTO todos (id, title, completed, created_at, updated_at, user_id) VALUES (?, ?, ?, ?, ?, ?)"
+  ).run(id, title.trim(), 0, now, now, userId);
 
   return {
     id,

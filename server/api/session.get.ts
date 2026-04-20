@@ -1,35 +1,35 @@
-import { defineEventHandler, getCookie, setCookie, createError } from "h3";
-import { getSessionById, upsertSession, createSessionRow, insertSession } from "../lib/session";
+import { defineEventHandler, getCookie, setCookie } from "h3";
+import { getUserByCookieId, upsertUser, createUserRow, insertUser } from "../lib/session";
 
 const SESSION_NAME = "todo-session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
 
 export default defineEventHandler(async (event) => {
-  let sessionId = getCookie(event, SESSION_NAME);
+  const cookieId = getCookie(event, SESSION_NAME);
 
-  if (sessionId && !getSessionById(sessionId)) {
-    sessionId = crypto.randomUUID();
-    const row = createSessionRow(sessionId);
-    insertSession(row);
-    upsertSession(sessionId, { userId: sessionId });
+  if (!cookieId || !getUserByCookieId(cookieId)) {
+    const userId = crypto.randomUUID();
+    const row = createUserRow(userId, cookieId ?? userId);
+    insertUser(row);
+    upsertUser(userId, userId);
+    setCookie(event, SESSION_NAME, userId, {
+      maxAge: SESSION_MAX_AGE,
+      httpOnly: true,
+      sameSite: "lax",
+    });
+    (event.context as { user: { userId: string } }).user = { userId };
+    return { userId };
   }
 
-  if (!sessionId) {
-    sessionId = crypto.randomUUID();
-    const row = createSessionRow(sessionId);
-    insertSession(row);
-    upsertSession(sessionId, { userId: sessionId });
-  }
+  upsertUser(cookieId, cookieId);
 
-  upsertSession(sessionId, { userId: sessionId });
-
-  setCookie(event, SESSION_NAME, sessionId, {
+  setCookie(event, SESSION_NAME, cookieId, {
     maxAge: SESSION_MAX_AGE,
     httpOnly: true,
     sameSite: "lax",
   });
 
-  (event.context as { session: { sessionId: string } }).session = { sessionId };
+  (event.context as { user: { userId: string } }).user = { userId: cookieId };
 
-  return { sessionId };
+  return { userId: cookieId };
 });

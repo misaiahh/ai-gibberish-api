@@ -1,22 +1,22 @@
 import { defineEventHandler, setCookie } from "h3";
-import { createSessionRow, insertSession, upsertSession } from "../lib/session";
+import { createUserRow, insertUser, upsertUser } from "../lib/session";
 
 const SESSION_NAME = "todo-session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
 
 export default defineEventHandler(async (event) => {
-  const newId = crypto.randomUUID();
-  const row = createSessionRow(newId);
-  insertSession(row);
-  upsertSession(newId, { userId: newId });
+  const userId = crypto.randomUUID();
+  const row = createUserRow(userId, userId);
+  insertUser(row);
+  upsertUser(userId, userId);
 
-  setCookie(event, SESSION_NAME, newId, {
+  setCookie(event, SESSION_NAME, userId, {
     maxAge: SESSION_MAX_AGE,
     httpOnly: true,
     sameSite: "lax",
   });
 
-  (event.context as { session: { sessionId: string } }).session = { sessionId: newId };
+  (event.context as { user: { userId: string } }).user = { userId };
 
-  return { sessionId: newId };
+  return { userId };
 });
