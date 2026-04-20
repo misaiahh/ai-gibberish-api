@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
   try {
     const todo = db
       .prepare("SELECT * FROM todos WHERE id = ? AND user_id = ?")
-      .get(id, userId) as { id: string; title: string; completed: number; created_at: string } | undefined;
+      .get(id, userId) as { id: string; title: string; completed: number; created_at: string; place_id: string | null } | undefined;
 
     if (!todo) {
       logger.debug("[updateTodo]", ctx, { id, message: "not found" });
@@ -52,6 +52,22 @@ export default defineEventHandler(async (event) => {
       values.push(body.completed ? 1 : 0);
     }
 
+    if (body.placeId !== undefined) {
+      const newPlaceId = body.placeId === null || body.placeId === "" ? null : String(body.placeId);
+
+      if (newPlaceId !== null) {
+        const place = db
+          .prepare("SELECT * FROM places WHERE id = ? AND user_id = ?")
+          .get(newPlaceId, userId);
+        if (!place) {
+          throw createError({ statusCode: 400, statusMessage: "Place not found" });
+        }
+      }
+
+      fields.push("place_id = ?");
+      values.push(newPlaceId);
+    }
+
     if (fields.length === 0) {
       throw createError({ statusCode: 400, statusMessage: "No valid fields to update" });
     }
@@ -68,6 +84,7 @@ export default defineEventHandler(async (event) => {
       id: todo.id,
       title: body.title ?? todo.title,
       completed: body.completed !== undefined ? body.completed : todo.completed === 1,
+      placeId: body.placeId !== undefined ? (body.placeId === null || body.placeId === "" ? null : body.placeId) : todo.place_id,
       createdAt: todo.created_at,
       updatedAt: now,
     };

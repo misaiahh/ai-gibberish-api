@@ -53,6 +53,24 @@ try {
   // Column already exists
 }
 
+try {
+  db.exec(`ALTER TABLE todos ADD COLUMN place_id TEXT`);
+} catch {
+  // Column already exists
+}
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS places (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    parent_id TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    FOREIGN KEY (parent_id) REFERENCES places(id) ON DELETE CASCADE
+  )
+`);
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS preferences (
     user_id TEXT PRIMARY KEY,
