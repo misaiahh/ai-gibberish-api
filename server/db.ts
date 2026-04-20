@@ -23,4 +23,19 @@ db.exec(`
   )
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS sessions (
+    id TEXT PRIMARY KEY,
+    data TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )
+`);
+
+try {
+  db.exec(`ALTER TABLE todos ADD COLUMN session_id TEXT REFERENCES sessions(id)`);
+} catch {
+  // Column already exists
+}
+
 export { db };

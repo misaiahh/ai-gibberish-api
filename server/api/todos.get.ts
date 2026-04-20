@@ -1,9 +1,16 @@
 import { db } from "../db";
+import { defineEventHandler, createError } from "h3";
+import { useSession } from "../lib/sessionHandler";
 
 // GET /api/todos — list all todos
-export default defineEventHandler(async () => {
-  const stmt = db.prepare("SELECT * FROM todos ORDER BY created_at DESC");
-  const todos = stmt.all() as Array<{
+export default defineEventHandler(async (event) => {
+  useSession(event);
+  const session = (event.context as { session: { sessionId: string } }).session;
+
+  const stmt = db.prepare(
+    "SELECT * FROM todos WHERE session_id = ? ORDER BY created_at DESC"
+  );
+  const todos = stmt.all(session.sessionId) as Array<{
     id: string;
     title: string;
     completed: number;

@@ -1,11 +1,16 @@
 import { db } from "../../db";
+import { defineEventHandler, getRouterParam, createError } from "h3";
+import { useSession } from "../../lib/sessionHandler";
 
 // GET /api/todos/:id — get a single todo
 export default defineEventHandler(async (event) => {
+  useSession(event);
+  const session = (event.context as { session: { sessionId: string } }).session;
+
   const id = getRouterParam(event, "id");
 
-  const stmt = db.prepare("SELECT * FROM todos WHERE id = ?");
-  const todo = stmt.get(id) as {
+  const stmt = db.prepare("SELECT * FROM todos WHERE id = ? AND session_id = ?");
+  const todo = stmt.get(id, session.sessionId) as {
     id: string;
     title: string;
     completed: number;

@@ -1,8 +1,26 @@
 import { db } from "../db";
+import { defineEventHandler, readBody, createError } from "h3";
+import { useSession } from "../lib/sessionHandler";
 
 // POST /api/todos — create a new todo
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event);
+  useSession(event);
+  const session = (event.context as { session: { sessionId: string } }).session;
+
+  // Read body directly from raw request to avoid h3 readBody issues in test env
+  const body = await new Promise<Record<string, unknown>>((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    const req = event.node.req as NodeJS.ReadableStream & { headers: Record<string, string> };
+    req.on("data", (chunk: Buffer) => chunks.push(chunk));
+    req.on("end", () => {
+      try {
+        resolve(JSON.parse(Buffer.concat(chunks).toString()));
+      } catch {
+        resolve({});
+      }
+    });
+    req.on("error", reject);
+  });
   const { title } = body;
 
   if (!title || typeof title !== "string" || !title.trim()) {
@@ -13,8 +31,8 @@ export default defineEventHandler(async (event) => {
   const now = new Date().toISOString();
 
   db.prepare(
-    "INSERT INTO todos (id, title, completed, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
-  ).run(id, title.trim(), 0, now, now);
+    "INSERT INTO todos (id, title, completed, created_at, updated_at, session_id) VALUES (?, ?, ?, ?, ?, ?)"
+  ).run(id, title.trim(), 0, now, now, session.sessionId);
 
   return {
     id,
