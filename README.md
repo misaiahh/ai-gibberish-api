@@ -4,9 +4,10 @@ Lightweight REST API for the Todo App, built with H3 + Nitro and SQLite.
 
 ## Summary of Changes
 
-- Added `/api/preferences` endpoint for storing user preferences (client-side and server-side storage toggles)
-- Pinned apt packages in Dockerfile to specific versions for reproducible builds
-- Added ESLint with TypeScript recommended rules for code quality
+- Added `/api/places` endpoints for organizing todos by location (home, work, etc.) with hierarchical sub-places support
+- Todos can now be assigned to a place via `placeId` field
+- Todo list endpoint supports filtering by `place_id` query parameter
+- Updated Todo schema to include optional `placeId` field
 
 ## Tech Stack
 
@@ -21,10 +22,10 @@ Lightweight REST API for the Todo App, built with H3 + Nitro and SQLite.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET    | `/api/todos` | List all todos |
-| POST   | `/api/todos` | Create a new todo |
+| GET    | `/api/todos` | List all todos (optional `?place_id=xxx` filter) |
+| POST   | `/api/todos` | Create a new todo (optional `placeId` in body) |
 | GET    | `/api/todos/:id` | Get a single todo |
-| PATCH  | `/api/todos/:id` | Update a todo |
+| PATCH  | `/api/todos/:id` | Update a todo (supports `placeId` update) |
 | DELETE | `/api/todos/:id` | Delete a todo |
 
 ### Todo schema
@@ -34,8 +35,31 @@ interface Todo {
   id: string;
   title: string;
   completed: boolean;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
+  placeId: string | null;   // optional, references a place
+  createdAt: string;        // ISO date string
+  updatedAt: string;        // ISO date string
+}
+```
+
+### Places
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET    | `/api/places` | List all places for current user |
+| POST   | `/api/places` | Create a new place (optional `parentId` for sub-places) |
+| GET    | `/api/places/:id` | Get a single place with its children |
+| PATCH  | `/api/places/:id` | Update a place |
+| DELETE | `/api/places/:id` | Delete a place and all its sub-places |
+
+### Place schema
+
+```ts
+interface Place {
+  id: string;
+  name: string;
+  parentId: string | null;  // null for root-level places, references another place for sub-places
+  createdAt: string;        // ISO date string
+  updatedAt: string;        // ISO date string
 }
 ```
 

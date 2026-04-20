@@ -19,6 +19,7 @@ export default defineEventHandler(async (event) => {
       completed: number;
       created_at: string;
       updated_at: string;
+      place_id: string | null;
     } | undefined;
 
     if (!todo) {
@@ -32,6 +33,7 @@ export default defineEventHandler(async (event) => {
       id: todo.id,
       title: todo.title,
       completed: todo.completed === 1,
+      placeId: todo.place_id,
       createdAt: todo.created_at,
       updatedAt: todo.updated_at,
     };
