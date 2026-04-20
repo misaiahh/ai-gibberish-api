@@ -1,20 +1,13 @@
 import { db } from "../../db";
 import { defineEventHandler, getRouterParam, createError } from "h3";
 import { useSession } from "../../lib/sessionHandler";
+import { getLogger } from "../../lib/logger";
 
 // PATCH /api/todos/:id — update a todo
 export default defineEventHandler(async (event) => {
+  const logger = getLogger();
   const { userId } = useSession(event);
-
   const id = getRouterParam(event, "id");
-
-  const todo = db
-    .prepare("SELECT * FROM todos WHERE id = ? AND user_id = ?")
-    .get(id, userId) as { id: string; title: string; completed: number; created_at: string } | undefined;
-
-  if (!todo) {
-    throw createError({ statusCode: 404, statusMessage: "Todo not found" });
-  }
 
   // Read body via raw stream to avoid h3 readBody issues in vitest
   const body = await new Promise<Record<string, unknown>>((resolve, reject) => {
@@ -30,40 +23,64 @@ export default defineEventHandler(async (event) => {
     });
     req.on("error", reject);
   });
-  const now = new Date().toISOString();
 
-  const fields: string[] = [];
-  const values: unknown[] = [];
+  const ctx = { endpoint: event.path, user: userId };
 
-  if (body.title !== undefined) {
-    if (typeof body.title !== "string" || !body.title.trim()) {
-      throw createError({ statusCode: 400, statusMessage: "Title must be a non-empty string" });
+  try {
+    const todo = db
+      .prepare("SELECT * FROM todos WHERE id = ? AND user_id = ?")
+      .get(id, userId) as { id: string; title: string; completed: number; created_at: string } | undefined;
+
+    if (!todo) {
+      logger.debug("[updateTodo]", ctx, { id, message: "not found" });
+      throw createError({ statusCode: 404, statusMessage: "Todo not found" });
     }
-    fields.push("title = ?");
-    values.push(body.title.trim());
+
+    const fields: string[] = [];
+    const values: unknown[] = [];
+
+    if (body.title !== undefined) {
+      if (typeof body.title !== "string" || !body.title.trim()) {
+        throw createError({ statusCode: 400, statusMessage: "Title must be a non-empty string" });
+      }
+      fields.push("title = ?");
+      values.push(body.title.trim());
+    }
+
+    if (body.completed !== undefined) {
+      fields.push("completed = ?");
+      values.push(body.completed ? 1 : 0);
+    }
+
+    if (fields.length === 0) {
+      throw createError({ statusCode: 400, statusMessage: "No valid fields to update" });
+    }
+
+    const now = new Date().toISOString();
+    fields.push("updated_at = ?");
+    values.push(now);
+    values.push(id);
+    values.push(userId);
+
+    db.prepare(`UPDATE todos SET ${fields.join(", ")} WHERE id = ? AND user_id = ?`).run(...values);
+
+    const output = {
+      id: todo.id,
+      title: body.title ?? todo.title,
+      completed: body.completed !== undefined ? body.completed : todo.completed === 1,
+      createdAt: todo.created_at,
+      updatedAt: now,
+    };
+
+    logger.traceMutationReq(ctx, "[updateTodo]", {
+      input: body,
+      output,
+    });
+
+    return output;
+  } catch (err) {
+    if (err instanceof Error && "statusCode" in err) throw err;
+    logger.error("[updateTodo]", ctx, err);
+    throw createError({ statusCode: 500, statusMessage: "Internal server error" });
   }
-
-  if (body.completed !== undefined) {
-    fields.push("completed = ?");
-    values.push(body.completed ? 1 : 0);
-  }
-
-  if (fields.length === 0) {
-    throw createError({ statusCode: 400, statusMessage: "No valid fields to update" });
-  }
-
-  fields.push("updated_at = ?");
-  values.push(now);
-  values.push(id);
-  values.push(userId);
-
-  db.prepare(`UPDATE todos SET ${fields.join(", ")} WHERE id = ? AND user_id = ?`).run(...values);
-
-  return {
-    id: todo.id,
-    title: body.title ?? todo.title,
-    completed: body.completed !== undefined ? body.completed : todo.completed === 1,
-    createdAt: todo.created_at,
-    updatedAt: now,
-  };
 });
