@@ -91,7 +91,10 @@ export default defineEventHandler(async (event) => {
 
     return output;
   } catch (err) {
-    if (err instanceof Error && "statusCode" in err) throw err;
+    if (err instanceof Error && "statusCode" in err) {
+      logger.debug("[updatePreferences]", ctx, { statusCode: err.statusCode, message: err.statusMessage });
+      throw err;
+    }
     logger.error("[updatePreferences]", ctx, err);
     throw createError({ statusCode: 500, statusMessage: "Internal server error" });
   }

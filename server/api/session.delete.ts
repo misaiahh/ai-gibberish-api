@@ -9,12 +9,19 @@ export default defineEventHandler(async (event) => {
   const ctx = { endpoint: event.path };
   const cookieId = getCookie(event, SESSION_NAME);
 
-  if (cookieId) {
-    deleteUserByCookieId(cookieId);
-    logger.info("[deleteSession]", ctx, { userId: cookieId });
+  logger.debug("[deleteSession]", ctx, { cookieExists: !!cookieId });
+
+  try {
+    if (cookieId) {
+      deleteUserByCookieId(cookieId);
+      logger.info("[deleteSession]", ctx, { userId: cookieId, action: "deleted" });
+    }
+
+    deleteCookie(event, SESSION_NAME);
+
+    return { cleared: true };
+  } catch (err) {
+    logger.error("[deleteSession]", ctx, err);
+    throw err;
   }
-
-  deleteCookie(event, SESSION_NAME);
-
-  return { cleared: true };
 });

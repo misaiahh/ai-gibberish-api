@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
       try {
         resolve(JSON.parse(Buffer.concat(chunks).toString()));
       } catch {
+        logger.debug("[createTodo]", { endpoint: event.path }, { message: "malformed JSON body" });
         resolve({});
       }
     });
@@ -43,7 +44,10 @@ export default defineEventHandler(async (event) => {
 
     return output;
   } catch (err) {
-    if (err instanceof Error && "statusCode" in err) throw err;
+    if (err instanceof Error && "statusCode" in err) {
+      logger.debug("[createTodo]", ctx, { statusCode: err.statusCode, message: err.statusMessage });
+      throw err;
+    }
     logger.error("[createTodo]", ctx, err);
     throw createError({ statusCode: 500, statusMessage: "Internal server error" });
   }
