@@ -1,28 +1,8 @@
-import { unlinkSync, existsSync } from "node:fs";
-
-const testDbPath = process.env.TEST_DB_PATH || "data/todo.db";
-
-// Clear stale DB before importing the built server
-try {
-  if (existsSync(testDbPath)) unlinkSync(testDbPath);
-  if (existsSync(testDbPath + "-wal")) unlinkSync(testDbPath + "-wal");
-  if (existsSync(testDbPath + "-shm")) unlinkSync(testDbPath + "-shm");
-} catch {
-  // DB may not exist
-}
-
-// Set port before importing the built server
-process.env.PORT = "3001";
-
-// Importing the built server auto-starts it
-// @ts-expect-error .mjs has no types
-import("../../.output/server/index.mjs");
-
 export async function startServer(): Promise<void> {
-  // Wait for server to be ready
+  // Wait for server to be ready (started by globalSetup)
   for (let i = 0; i < 40; i++) {
     try {
-      const res = await fetch("http://localhost:3001/api/health");
+      const res = await fetch("http://127.0.0.1:3001/api/health");
       if (res.ok) return;
     } catch {
       // Retry
@@ -39,9 +19,10 @@ export async function stopServer(): Promise<void> {
 export async function api(
   path: string,
   options?: RequestInit,
-  baseUrl = "http://localhost:3001"
+  baseUrl?: string,
 ): Promise<Response> {
-  return fetch(`${baseUrl}${path}`, {
+  const base = baseUrl ?? "http://127.0.0.1:3001";
+  return fetch(`${base}${path}`, {
     headers: { "Content-Type": "application/json", ...(options?.headers ?? {}) },
     ...options,
   });

@@ -1,18 +1,36 @@
 import { db } from "../../db";
+import { defineEventHandler, getRouterParam, readBody, createError } from "h3";
+import { useSession } from "../../lib/sessionHandler";
 
 // PATCH /api/todos/:id — update a todo
 export default defineEventHandler(async (event) => {
+  useSession(event);
+  const session = (event.context as { session: { sessionId: string } }).session;
+
   const id = getRouterParam(event, "id");
 
   const todo = db
-    .prepare("SELECT * FROM todos WHERE id = ?")
-    .get(id) as { id: string; title: string; completed: number; created_at: string } | undefined;
+    .prepare("SELECT * FROM todos WHERE id = ? AND session_id = ?")
+    .get(id, session.sessionId) as { id: string; title: string; completed: number; created_at: string } | undefined;
 
   if (!todo) {
     throw createError({ statusCode: 404, statusMessage: "Todo not found" });
   }
 
-  const body = await readBody(event);
+  // Read body via raw stream to avoid h3 readBody issues in vitest
+  const body = await new Promise<Record<string, unknown>>((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    const req = event.node.req as NodeJS.ReadableStream & { headers: Record<string, string> };
+    req.on("data", (chunk: Buffer) => chunks.push(chunk));
+    req.on("end", () => {
+      try {
+        resolve(JSON.parse(Buffer.concat(chunks).toString()));
+      } catch {
+        resolve({});
+      }
+    });
+    req.on("error", reject);
+  });
   const now = new Date().toISOString();
 
   const fields: string[] = [];
@@ -38,8 +56,9 @@ export default defineEventHandler(async (event) => {
   fields.push("updated_at = ?");
   values.push(now);
   values.push(id);
+  values.push(session.sessionId);
 
-  db.prepare(`UPDATE todos SET ${fields.join(", ")} WHERE id = ?`).run(...values);
+  db.prepare(`UPDATE todos SET ${fields.join(", ")} WHERE id = ? AND session_id = ?`).run(...values);
 
   return {
     id: todo.id,
