@@ -88,9 +88,7 @@
           "encoded": false
         },
         "headers": {
-          "Content-Type": [
-            "application/json"
-          ]
+          "Content-Type": ["application/json"]
         },
         "method": "POST",
         "path": "/api/todos"
@@ -134,9 +132,7 @@
           "encoded": false
         },
         "headers": {
-          "Content-Type": [
-            "application/json"
-          ]
+          "Content-Type": ["application/json"]
         },
         "method": "PATCH",
         "path": "/api/todos/nonexistent"
@@ -163,9 +159,7 @@
           "encoded": false
         },
         "headers": {
-          "Content-Type": [
-            "application/json"
-          ]
+          "Content-Type": ["application/json"]
         },
         "method": "PATCH",
         "path": "/api/todos/550e8400-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
@@ -192,9 +186,7 @@
           "encoded": false
         },
         "headers": {
-          "Content-Type": [
-            "application/json"
-          ]
+          "Content-Type": ["application/json"]
         },
         "method": "POST",
         "path": "/api/todos"

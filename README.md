@@ -5,6 +5,7 @@ Lightweight REST API for the Todo App, built with H3 + Nitro and SQLite.
 ## Summary of Changes
 
 - Pinned apt packages in Dockerfile to specific versions for reproducible builds
+- Added ESLint with TypeScript recommended rules for code quality
 
 ## Tech Stack
 
@@ -71,6 +72,12 @@ Tests run in three phases:
 3. **Integration tests** (5 tests) — covers state-dependent endpoints (GET by id, PATCH, DELETE)
 
 See [docs/contract-testing.md](docs/contract-testing.md) for setup details and troubleshooting.
+
+### Linting
+
+```bash
+npm run lint   # lint all .ts, .js, and .json files
+```
 
 ### Docker
 

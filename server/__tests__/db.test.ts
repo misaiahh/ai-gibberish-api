@@ -44,7 +44,7 @@ describe("SQLite todos schema", () => {
   });
 
   it("returns all todos ordered by created_at desc", () => {
-    const now = new Date().toISOString();
+    const _now = new Date().toISOString();
     db.prepare("INSERT INTO todos (id, title, completed, created_at, updated_at) VALUES (?, ?, ?, ?, ?)")
       .run("1", "First", 0, "2025-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z");
     db.prepare("INSERT INTO todos (id, title, completed, created_at, updated_at) VALUES (?, ?, ?, ?, ?)")

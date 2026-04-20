@@ -9,6 +9,6 @@
     "outDir": ".output",
     "rootDir": "server"
   },
-  "include": ["server/**/*.ts", ".nitro/types/**/*.d.ts"],
+  "include": ["server/**/*.ts", ".nitro/types/**/*.d.ts", "*.ts"],
   "exclude": ["node_modules", ".output"]
 }

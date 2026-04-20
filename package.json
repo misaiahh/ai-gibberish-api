@@ -9,7 +9,8 @@
     "preview": "node .output/server/index.mjs",
     "test": "npm run build --if-present && vitest run",
     "test:watch": "npm run build --if-present && vitest",
-    "test:contracts": "test -d .output/server && vitest run --config vitest.contracts.config.ts || (echo 'Build first: npm run build' && exit 1)"
+    "test:contracts": "test -d .output/server && vitest run --config vitest.contracts.config.ts || (echo 'Build first: npm run build' && exit 1)",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^8.5.0",
@@ -21,9 +22,14 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/better-sqlite3": "^7.6.12",
     "@vitest/coverage-v8": "^4.1.4",
+    "eslint": "^10.2.1",
+    "eslint-plugin-unicorn": "^64.0.0",
+    "prettier": "^3.8.3",
     "typescript": "^5.7.0",
+    "typescript-eslint": "^8.58.2",
     "vitest": "^4.1.4"
   }
 }
