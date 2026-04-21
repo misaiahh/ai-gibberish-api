@@ -21,6 +21,23 @@
       "type": "Synchronous/HTTP"
     },
     {
+      "description": "a request for a nonexistent place",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "No places exist"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/places/nonexistent"
+      },
+      "response": {
+        "status": 404
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
       "description": "a request for a nonexistent todo",
       "pending": false,
       "providerStates": [
@@ -38,6 +55,23 @@
       "type": "Synchronous/HTTP"
     },
     {
+      "description": "a request for a specific place",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "A place exists"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/places/550e8400-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+      },
+      "response": {
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
       "description": "a request for a specific todo",
       "pending": false,
       "providerStates": [
@@ -48,6 +82,23 @@
       "request": {
         "method": "GET",
         "path": "/api/todos/550e8400-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+      },
+      "response": {
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request for all places",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "No places exist"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/places"
       },
       "response": {
         "status": 200
@@ -72,6 +123,86 @@
       "type": "Synchronous/HTTP"
     },
     {
+      "description": "a request for current session",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "A user exists"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/session"
+      },
+      "response": {
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request for preferences",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "A user exists"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/preferences"
+      },
+      "response": {
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request to create a new session",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "A user exists"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/api/session"
+      },
+      "response": {
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request to create a place",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "No places exist"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "name": "Kitchen"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/places"
+      },
+      "response": {
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
       "description": "a request to create a todo",
       "pending": false,
       "providerStates": [
@@ -88,10 +219,29 @@
           "encoded": false
         },
         "headers": {
-          "Content-Type": ["application/json"]
+          "Content-Type": [
+            "application/json"
+          ]
         },
         "method": "POST",
         "path": "/api/todos"
+      },
+      "response": {
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request to delete a place",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "A place exists"
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "path": "/api/places/550e8400-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
       },
       "response": {
         "status": 200
@@ -116,6 +266,52 @@
       "type": "Synchronous/HTTP"
     },
     {
+      "description": "a request to delete the session",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "A session exists"
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "path": "/api/session"
+      },
+      "response": {
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request to update a nonexistent place",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "No places exist"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "name": "nope"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "PATCH",
+        "path": "/api/places/nonexistent"
+      },
+      "response": {
+        "status": 404
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
       "description": "a request to update a nonexistent todo",
       "pending": false,
       "providerStates": [
@@ -132,13 +328,44 @@
           "encoded": false
         },
         "headers": {
-          "Content-Type": ["application/json"]
+          "Content-Type": [
+            "application/json"
+          ]
         },
         "method": "PATCH",
         "path": "/api/todos/nonexistent"
       },
       "response": {
         "status": 404
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request to update a place",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "A place exists"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "name": "Updated Kitchen"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "PATCH",
+        "path": "/api/places/550e8400-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+      },
+      "response": {
+        "status": 200
       },
       "type": "Synchronous/HTTP"
     },
@@ -159,13 +386,73 @@
           "encoded": false
         },
         "headers": {
-          "Content-Type": ["application/json"]
+          "Content-Type": [
+            "application/json"
+          ]
         },
         "method": "PATCH",
         "path": "/api/todos/550e8400-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
       },
       "response": {
         "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request to update preferences",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "A user exists"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "clientStorageEnabled": false
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "PATCH",
+        "path": "/api/preferences"
+      },
+      "response": {
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request with empty place name",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "No places exist"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "name": ""
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/places"
+      },
+      "response": {
+        "status": 400
       },
       "type": "Synchronous/HTTP"
     },
@@ -186,10 +473,41 @@
           "encoded": false
         },
         "headers": {
-          "Content-Type": ["application/json"]
+          "Content-Type": [
+            "application/json"
+          ]
         },
         "method": "POST",
         "path": "/api/todos"
+      },
+      "response": {
+        "status": 400
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request with invalid preferences",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "A user exists"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "clientStorageEnabled": "yes"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "PATCH",
+        "path": "/api/preferences"
       },
       "response": {
         "status": 400
