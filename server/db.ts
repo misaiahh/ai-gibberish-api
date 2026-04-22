@@ -59,6 +59,12 @@ try {
   // Column already exists
 }
 
+try {
+  db.exec(`ALTER TABLE todos ADD COLUMN description TEXT`);
+} catch {
+  // Column already exists
+}
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS places (
     id TEXT PRIMARY KEY,
@@ -78,6 +84,18 @@ db.exec(`
     server_storage_enabled INTEGER NOT NULL DEFAULT 1,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
+  )
+`);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS todo_places (
+    id TEXT PRIMARY KEY,
+    todo_id TEXT NOT NULL,
+    place_id TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE CASCADE,
+    FOREIGN KEY (place_id) REFERENCES places(id) ON DELETE CASCADE,
+    UNIQUE(todo_id, place_id)
   )
 `);
 
