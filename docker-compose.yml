@@ -4,6 +4,9 @@ services:
     ports:
       - "3000:3001"
     volumes:
-      - ./data:/app/data
+      - todo-data:/app/data
     environment:
       - PORT=3001
+
+volumes:
+  todo-data:

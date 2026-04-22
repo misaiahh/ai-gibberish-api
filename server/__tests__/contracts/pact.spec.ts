@@ -39,6 +39,7 @@ const todoSchema = MatchersV3.like({
   title: "string",
   completed: false,
   placeId: null,
+  place: null,
   createdAt: isoDateTime,
   updatedAt: isoDateTime,
 });
